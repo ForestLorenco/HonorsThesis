@@ -159,7 +159,7 @@ if __name__ == '__main__':
         total_reward = 0
         while not done:
             t += 1
-            env.render()
+            #env.render()
             action = agent.act(state)
             next_obs, reward, done, _ = env.step(action)
             next_state = preprocess_observation(next_obs)
