@@ -8,6 +8,8 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
+from keras import backend as K
+from tensorflow.python.client import device_lib
 
 import time
 
@@ -61,6 +63,10 @@ class DQNAgent:
             self.epsilon *= self.epsilon_decay
 
 if __name__ == "__main__":
+    print(device_lib.list_local_devices())
+    K.tensorflow_backend._get_available_gpus()
+
+
     env = gym.make("CartPole-v1")
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
