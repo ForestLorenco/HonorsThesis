@@ -5,114 +5,9 @@ import numpy as np
 import random
 
 import threading
+import cv2
 
-class Network_Maker:
-    def __init__(self, action_size):
-        self.action_size = action_size
-
-        # things for the conv network
-        self.conv_n_maps = [32, 64, 64]
-        self.conv_kernel_sizes = [(8, 8, 4), (4, 4, 32), (3, 3, 64)]
-        self.conv_strides = [4, 2, 1]
-        self.input_height = 88
-        self.input_width = 80
-        self.input_channels = 1
-
-
-    def weight_var(self, shape):
-        """
-        Creates a tensor that is shape with random numbers from a normal distritution with stdev 0.01
-        :param shape:
-        :return a tf variable of shape shape:
-        """
-        init = tf.random.truncated_normal(shape, stddev = 0.01)
-        return tf.Variable(init)
-
-    def bias_var(self, shape):
-        """Creates a tensor that is shape with values 0.01
-        :param shape:
-        :return a tf variable of shape shape:
-        """
-        init = tf.constant(0.01, shape=shape)
-        return tf.Variable(init)
-
-    def conv2d(self, input, W, stride):
-        """
-        Creates a conv2d tensor for a layer in a neural network
-        :param input:
-        :param W:
-        :param stride:
-        :return a conv2d nn tensor:
-        """
-        return tf.nn.conv2d(input, W, strides=[1, stride, stride, 1], padding="SAME")
-
-    def max_pool_2x2(self, x):
-        """
-        Performs max_pool for the output of the convolutional layer
-        :param x:
-        :return a nn.max_pool tensor:
-        """
-        return tf.nn.max_pool2d(x, ksize=[1,2,2,1], strides=[1,2,2,1], padding="SAME")
-
-    def createNetwork(self):
-        """
-        Creates and returns DQN network for agent
-        :return output and input layer, as well as all weight and bias tensors for nn:
-        """
-        #input layer
-        inp_layer = tf.compat.v1.placeholder("float", [None, self.input_height, self.input_width, self.input_channels])
-
-        #first convolutional layer tensors
-        W_conv1 = self.weight_var([8, 8, 1, 32])
-        b_conv1 = self.bias_var([32])
-
-        W_conv2 = self.weight_var([4, 4, 32, 64])
-        b_conv2 = self.bias_var([64])
-
-        W_conv3 = self.weight_var([3, 3, 64, 64])
-        b_conv3 = self.bias_var([64])
-
-        #Fully connected layer tensors
-        W_fc = self.weight_var([256, 256])
-        b_fc = self.bias_var([256])
-
-        #ouptput layer tensors
-        W_out = self.weight_var([256, self.action_size])
-        b_out = self.bias_var([self.action_size])
-
-        #Hidden layer declerations
-        h_conv1 = tf.nn.relu(self.conv2d(inp_layer, W_conv1, self.conv_strides[0])+b_conv1)
-        h_pool1 = self.max_pool_2x2(h_conv1)
-
-        h_conv2 = tf.nn.relu(self.conv2d(h_pool1, W_conv2, self.conv_strides[1]) + b_conv2)
-        h_pool2 = self.max_pool_2x2(h_conv2)
-
-        h_conv3 = tf.nn.relu(self.conv2d(h_pool2, W_conv3, self.conv_strides[2]) + b_conv3)
-        h_pool3 = self.max_pool_2x2(h_conv3)
-
-        #Flatten layer
-        h_pool3 = tf.reshape(h_pool3, [-1,256])
-
-        h_fc = tf.nn.relu(tf.matmul(h_pool3, W_fc)+b_fc)
-
-        output = tf.matmul(h_fc, W_out)+b_out
-
-        return inp_layer, output, W_conv1, b_conv1, W_conv2, b_conv2, W_conv3, b_conv3, W_fc, b_fc, W_out, b_out
-
-
-def preprocess_observation(obs):
-    """
-    This function preprocesses image, normalizing color, grayscaling and improcing contrast
-    :param obs:
-    :return:
-    """
-    # We need to preprocess the images to speed up training
-    main_char_color = np.array([86,138,89]).mean() #<- specific to mrs.pacman, will need to specialize this for each game
-    img = obs[1:176:2, ::2] # crop and downsize
-    img = img.mean(axis=2) # to greyscale
-    img[img==main_char_color] = 0 # Improve contrast
-    img = (img - 128) / 128 - 1 # normalize from -1. to 1.
-    return img.reshape(88, 80, 1)
+import networkmaker
 
 def copy_target_network(sess):
     """
@@ -153,7 +48,9 @@ def train_agent(id, sess, lock):
         lock.release()
     """
 
-    obs = preprocess_observation(obs)
+    x_t = cv2.cvtColor(cv2.resize(obs, (80, 80)), cv2.COLOR_BGR2GRAY)
+    s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
+    aux_s = s_t
 
     #Sleep the network to get everything to start
     time.sleep(3*id)
@@ -187,7 +84,7 @@ def train_agent(id, sess, lock):
 
         #Choose action
 
-        out_t = O_net_out.eval(session=sess, feed_dict={O_net_in:[obs]}) #Get action from online_nn
+        out_t = O_net_out.eval(session=sess, feed_dict={O_net_in:[s_t]}) #Get action from online_nn
         a_t = np.zeros([ACTIONS])
 
         action_index = 0
@@ -207,24 +104,27 @@ def train_agent(id, sess, lock):
         obs1, reward, done, info = env.step(np.argmax(a_t))
         lock.release()
 
+        x_t1 = cv2.cvtColor(cv2.resize(obs1, (80, 80)), cv2.COLOR_BGR2GRAY)
+        x_t1 = np.reshape(x_t1, (80, 80, 1))
+        aux_s = np.delete(s_t, 0, axis=2)
+        s_t1 = np.append(aux_s, x_t1, axis=2)
+
         score += reward
 
-        #Normalize the obs
-        obs1 = preprocess_observation(obs1)
-
         #Accumulate the gradients
-        out_t1 = T_net_out.eval(session=sess, feed_dict={T_net_in:[obs1]})
+        out_t1 = T_net_out.eval(session=sess, feed_dict={T_net_in:[s_t1]})
 
         if done:
+            reward = -10
             y_batch.append(reward)
         else:
             y_batch.append(reward+GAMMA*np.max(out_t1))
 
         a_batch.append(a_t)
-        in_batch.append(obs)
+        in_batch.append(s_t)
 
         #set current state to next state
-        obs = obs1
+        s_t = s_t1
 
         #Increment Global, and local variables
         T += 1
@@ -274,7 +174,7 @@ EXPLORE = 400000*10 # Frames over which to anneal epsilon
 OBSERVE = 0
 
 T = 0 #Initial training steps
-Itarget = 10000 #Num iterations before updating target network
+Itarget = 20000 #Num iterations before updating target network
 Iasync = 5 #Num iterations before updating the online network
 
 GAMMA = 0.99 # Decay rate of past observations
@@ -284,7 +184,7 @@ EPSILONS = 3
 ACTIONS = ENV.action_space.n
 
 #Declare the online network
-O_net_in, O_net_out, Wo_conv1, bo_conv1, Wo_conv2, bo_conv2, Wo_conv3, bo_conv3, Wo_fc, bo_fc, Wo_out, bo_out = Network_Maker(ACTIONS).createNetwork()
+O_net_in, O_net_out, Wo_conv1, bo_conv1, Wo_conv2, bo_conv2, Wo_conv3, bo_conv3, Wo_fc, bo_fc, Wo_out, bo_out = networkmaker.Networkmaker(ACTIONS).createNetwork()
 
 #Declare training tensors and define the cost functions, and optimizer
 a = tf.compat.v1.placeholder("float", [None, ACTIONS])
@@ -294,7 +194,7 @@ cost_O = tf.reduce_mean(tf.square(y - O_out_action))
 train_O = tf.compat.v1.train.RMSPropOptimizer(0.001, decay=0.99).minimize(cost_O) #using the rmsprop, with decay and momentum
 
 #Create the target network
-T_net_in, T_net_out, Wt_conv1, bt_conv1, Wt_conv2, bt_conv2, Wt_conv3, bt_conv3, Wt_fc, bt_fc, Wt_out, bt_out = Network_Maker(ACTIONS).createNetwork()
+T_net_in, T_net_out, Wt_conv1, bt_conv1, Wt_conv2, bt_conv2, Wt_conv3, bt_conv3, Wt_fc, bt_fc, Wt_out, bt_out = networkmaker.Networkmaker(ACTIONS).createNetwork()
 #Creates a tensor of copy operations
 copy_Otarget = [Wt_conv1.assign(Wo_conv1), bt_conv1.assign(bo_conv1), Wt_conv2.assign(Wo_conv2),
                 bt_conv2.assign(bo_conv2), Wt_conv3.assign(Wo_conv3), bt_conv3.assign(bo_conv3), Wt_fc.assign(Wo_fc),

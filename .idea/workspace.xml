@@ -2,28 +2,33 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="becb8b4c-bd70-49a8-a8f4-1ddab006352c" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/HonorsThesis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/HonorsThesis.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5180000.data-00000-of-00001" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5180000.index" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5180000.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5185000.data-00000-of-00001" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5185000.index" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5185000.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5190000.data-00000-of-00001" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5190000.index" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5190000.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5195000.data-00000-of-00001" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5195000.index" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5195000.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5200000.data-00000-of-00001" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5200000.index" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5200000.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/checkpoint" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asynch_one_DQL.py" beforeDir="false" afterPath="$PROJECT_DIR$/Asynch_network/asynch_one_DQL.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Asynch_network/asynch_one_DQL.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#0#23#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -46,42 +51,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/ms_pacman_dqn.py" />
-        <option value="$PROJECT_DIR$/ms_pacman_dqn2.py" />
-        <option value="$PROJECT_DIR$/cart_pole_nn.py" />
-        <option value="$PROJECT_DIR$/asynch_one_DQL.py" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectFrameBounds">
-    <option name="y" value="23" />
-    <option name="width" value="1260" />
-    <option name="height" value="634" />
-  </component>
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="HonorsThesis" type="b2602c69:ProjectViewProjectNode" />
-              <item name="HonorsThesis" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-    </panes>
-  </component>
+  <component name="ProjectId" id="1TDOLDxU7bT0DBGs1BDGJX770TA" />
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -108,43 +81,17 @@
     </task>
     <servers />
   </component>
-  <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1260" height="634" extended-state="0" />
-    <editor active="true" />
-    <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24939467" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32841328" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-    </layout>
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/GymTest.py" />
-    <entry file="file://$PROJECT_DIR$/cart_pole_nn.py" />
-    <entry file="file://$PROJECT_DIR$/ms_pacman_dqn.py" />
-    <entry file="file://$PROJECT_DIR$/ms_pacman_dqn2.py" />
-    <entry file="file://$PROJECT_DIR$/asynch_one_DQL.py" />
-    <entry file="file://$PROJECT_DIR$/Asynch_network/asynch_one_DQL.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
