@@ -71,32 +71,6 @@ class Network:
         v_ = tf.matmul(h_fc1, self.W_fc3) + self.b_fc3
         self.v = tf.reshape(v_, [-1])
 
-    def prepare_loss(self, e_beta):
-        #Action input for policy
-        self.a = tf.compat.v1.placeholder("float", [None, self.action_size])
-
-        self.temp_diff = tf.compat.v1.placeholder("float", [None, self.action_size])
-
-        # avoid NaN with clipping when value in pi becomes zero
-        log_pi = tf.log(tf.clip_by_value(self.pi, 1e-20, 1.0))
-
-        # policy entropy
-        entropy = -tf.reduce_sum(self.pi * log_pi, reduction_indices=1)
-
-        # policy loss (output)  (Adding minus, because the original paper's objective function is for gradient ascent, but we use gradient descent optimizer.)
-        policy_loss = - tf.reduce_sum(
-            tf.reduce_sum(tf.multiply(log_pi, self.a), reduction_indices=1) * self.temp_diff + entropy * e_beta)
-
-        #input for the value function
-        self.r = tf.compat.v1.placeholder("float", [None])
-
-        # value loss (output)
-        # (Learning rate for Critic is half of Actor's, so multiply by 0.5)
-        value_loss = 0.5 * tf.nn.l2_loss(self.r - self.v)
-
-        # gradienet of policy and value are summed up
-        self.total_loss = policy_loss + value_loss
-
     def run_policy_and_value(self, sess, s_t):
         pi_out, v_out = sess.run([self.pi, self.v], feed_dict={self.s: [s_t]})
         return (pi_out[0], v_out[0])
