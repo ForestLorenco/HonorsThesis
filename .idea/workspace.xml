@@ -2,27 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="becb8b4c-bd70-49a8-a8f4-1ddab006352c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/HonorsThesis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/HonorsThesis.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5180000.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5180000.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5180000.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5185000.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5185000.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5185000.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5190000.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5190000.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5190000.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5195000.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5195000.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5195000.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5200000.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5200000.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/SpaceInvaders-v0-dqn-5200000.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asyn_network_saves/checkpoint" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/asynch_one_DQL.py" beforeDir="false" afterPath="$PROJECT_DIR$/Asynch_network/asynch_one_DQL.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Asynch_network/asynch_one_play.py" beforeDir="false" afterPath="$PROJECT_DIR$/Asynch_network/asynch_one_play.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

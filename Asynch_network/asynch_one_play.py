@@ -25,6 +25,7 @@ def play_game():
 
 
         obs, reward, done, info = env.step(np.argmax(a_t))
+        print(obs.shape)
 
         obs = cv2.cvtColor(cv2.resize(obs, (80, 80)), cv2.COLOR_BGR2GRAY)
         obs = np.reshape(obs, (80, 80, 1))
