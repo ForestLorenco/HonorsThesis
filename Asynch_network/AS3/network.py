@@ -90,7 +90,7 @@ class Network:
                 self.W_fc2, self.b_fc2,
                 self.W_fc3, self.b_fc3]
 
-    def sync_network(self, src_network, sess):
+    def sync_network(self, src_network, sess, lock):
         """
         Copies the target network to the thread specific network
         :param src_network:
@@ -100,8 +100,9 @@ class Network:
         src_vars = src_network.get_vars()
         dst_vars = self.get_vars()
         copy_Otarget = []
-
+        lock.acquire()
         for src_var, dst_var in zip(src_vars, dst_vars):
             copy_Otarget.append(src_var.assign(dst_var))
 
         sess.run(copy_Otarget)
+        lock.release()

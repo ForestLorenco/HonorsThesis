@@ -4,6 +4,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 import gym
+from collections import deque
 
 class A3C_Thread:
     def __init__(self, thread_index, init_lr, lr, grad_applier, max_glob_t, action_size):
@@ -37,7 +38,7 @@ class A3C_Thread:
 
     def get_init_obs(self, obs):
         obs = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (80, 80))
-        self.s_t = np.stack((obs, obs, obs, obs), axis=2)
+        self.s_t = deque([obs, obs, obs, obs])
 
     def step(self, sess, global_t, global_network, lock, saver, env):
         start_t = 0
@@ -72,13 +73,17 @@ class A3C_Thread:
 
             x_t1 = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (80, 80))
             x_t1 = np.reshape(x_t1, (80, 80, 1))
-            aux_s = np.delete(self.s_t, 0, axis=2)
-            s_t1 = np.append(aux_s, x_t1, axis=2)
-
-            self.s_t = s_t1
+            self.s_t.pop()
+            self.s_t.appendleft(x_t1)
 
             if done:
                 env.reset()
+                obs = env.reset()
+                x_t1 = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (80, 80))
+                x_t1 = np.reshape(x_t1, (80, 80, 1))
+                self.s_t.pop()
+                self.s_t.appendleft(x_t1)
+                
                 print("THREAD:{} | REWARD:{} | TIME:{} ".format(self.thread_index, self.episode_reward, self.local_t ))
                 self.episode_reward = 0
                 terminal_end = True
