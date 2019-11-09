@@ -5,6 +5,7 @@ class Network:
     def __init__(self,action_size, thread_index):
         self.action_size = action_size
         self.thread_index = thread_index
+        self.make_network()
 
     def fc_variable(self, weight_shape):
         input_channels = weight_shape[0]
@@ -36,19 +37,11 @@ class Network:
         """
         return tf.nn.conv2d(input, W, strides=[1, stride, stride, 1], padding="SAME")
 
-    def max_pool_2x2(self, x):
-        """
-        Performs max_pool for the output of the convolutional layer
-        :param x:
-        :return a nn.max_pool tensor:
-        """
-        return tf.nn.max_pool2d(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="VALID")
-
     def make_network(self):
         self.W_conv1, self.b_conv1 = self.conv_variable([8, 8, 4, 16])  # stride=4
         self.W_conv2, self.b_conv2 = self.conv_variable([4, 4, 16, 32])  # stride=2
 
-        self.W_fc1, self.b_fc1 = self.fc_variable([2592, 256])
+        self.W_fc1, self.b_fc1 = self.fc_variable([3200, 256])
 
         # weight for policy output layer
         self.W_fc2, self.b_fc2 = self.fc_variable([256, self.action_size])
@@ -62,7 +55,7 @@ class Network:
         h_conv1 = tf.nn.relu(self.conv2d(self.s, self.W_conv1, 4) + self.b_conv1)
         h_conv2 = tf.nn.relu(self.conv2d(h_conv1, self.W_conv2, 2) + self.b_conv2)
 
-        h_conv2_flat = tf.reshape(h_conv2, [-1, 2592])
+        h_conv2_flat = tf.reshape(h_conv2, [-1, 3200])
         h_fc1 = tf.nn.relu(tf.matmul(h_conv2_flat, self.W_fc1) + self.b_fc1)
 
         # policy (output)
