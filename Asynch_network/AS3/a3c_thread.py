@@ -29,7 +29,7 @@ class A3C_Thread:
         self.s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
 
     def step(self, sess, global_t, global_network, lock, saver, env):
-        start_t = 0
+        start_t = self.local_t
         states = []
         actions = []
         rewards = []
@@ -57,7 +57,6 @@ class A3C_Thread:
             rewards.append(np.clip(reward, -1, 1))
 
             self.local_t += 1
-            start_t += 1
 
             x_t1 = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (80, 80))
             x_t1 = np.reshape(x_t1, (80, 80, 1))
@@ -72,7 +71,7 @@ class A3C_Thread:
                 aux_s = np.delete(self.s_t, 0, axis=2)
                 self.s_t = np.append(aux_s, x_t1, axis=2)
 
-                print("THREAD:{} | REWARD:{} | TIME:{} ".format(self.thread_index, self.episode_reward, self.local_t ))
+                print("THREAD:{} | REWARD:{} | TIME:{} | GlOBALTIME: {}".format(self.thread_index, self.episode_reward, self.local_t , global_t+self.local_t - start_t))
                 self.episode_reward = 0
                 terminal_end = True
                 break
@@ -101,8 +100,5 @@ class A3C_Thread:
             batch_a.append(a)
             batch_td.append(td)
             batch_R.append(R)
-
-        if self.local_t % 5000 == 0:
-            saver.save(sess, 'a3c_saves/a3c-dqn', global_step=global_t)
 
         return self.local_t - start_t, (batch_si, batch_a, batch_td, batch_R)

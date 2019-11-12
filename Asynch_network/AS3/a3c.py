@@ -74,7 +74,7 @@ train_global = tf.compat.v1.train.RMSPropOptimizer(learning_rate=lr_input, decay
 
 threads = []
 #create a new thread
-for i in range(8):
+for i in range(10):
     thread = a3c_thread.A3C_Thread(i, const.MAX_TIME_STEP, ACTIONS)
     threads.append(thread)
 
@@ -118,6 +118,7 @@ def train(index, lock):
         global_t += t
         batch_si, batch_a, batch_td, batch_R = vars[0], vars[1], vars[2], vars[3]
 
+        lock.acquire()
         sess.run(train_global,
                  feed_dict={a: batch_a,
                             r: batch_R,
@@ -125,13 +126,14 @@ def train(index, lock):
                             global_network.s: batch_si,
                             lr_input: current_lr
                             })
+        lock.release()
 
 
 
 if __name__ == "__main__":
     train_threads = []
     lock = threading.Lock()
-    for i in range(8):
+    for i in range(10):
         train_threads.append(threading.Thread(target=train, args=(i,lock)))
     start = time.time()
 
@@ -145,3 +147,5 @@ if __name__ == "__main__":
 
     end = time.time()
     print("Model took {} time to train".format(end-start))
+
+    saver.save(sess, 'a3c_saves/' + 'checkpoint', global_step=global_t)
