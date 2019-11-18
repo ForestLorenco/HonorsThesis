@@ -3,7 +3,7 @@ import gym
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Conv2D
-from keras.optimizers import SGD
+from keras.optimizers import RMSprop
 from keras.initializers import VarianceScaling
 from keras.layers import Flatten
 from keras.models import load_model
@@ -32,9 +32,10 @@ class DQNAgent:
         #things for the learning
         self.memory = collections.deque(maxlen=20000)
         self.gamma = 0.95  # this is discount rate
-        self.epsilon = 1.0  # exploration rate
-        self.epsilon_min = 0.01  # min for exploration rate
-        self.epsilon_decay = 0.995  # how fast epsilon decays
+        self.start_epsilon = 1.0
+        self.epsilon = self.start_epsilon# exploration rate
+        self.epsilon_min = 0.1  # min for exploration rate
+        #self.epsilon_decay = 0.995  # how fast epsilon decays
         self.lr = 0.001
         self.momentum = 0.95
 
@@ -63,7 +64,7 @@ class DQNAgent:
         model.add(Flatten())
         model.add(Dense(512, activation='relu', kernel_initializer=VarianceScaling(), name='dense1'))
         model.add(Dense(self.action_size, activation='relu', kernel_initializer=VarianceScaling(), name='dens2'))
-        model.compile(loss='mse', optimizer=SGD(lr=self.lr, momentum=self.momentum))
+        model.compile(loss='mse', optimizer=RMSprop(lr=self.lr, momentum=self.momentum))
         return model
 
     def remember(self, action, state, reward, next_state, done):
@@ -80,9 +81,9 @@ class DQNAgent:
         return np.argmax(act_values[0])
 
     #epsilon decay
-    def epsilonDecay(self):
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
+    def epsilonDecay(self, t):
+        if self.start_epsilon > self.epsilon_min:
+            self.epsilon = t*(self.epsilon_min- self.start_epsilon)/(10**6) + self.start_epsilon
 
     # train the network off the memory
     def replay(self, batch_size):
@@ -128,6 +129,7 @@ def preprocess_observation(obs):
     return img.reshape(88, 80, 1)
 
 if __name__ == '__main__':
+    k = 4
     env = gym.make("MsPacman-v0")
     done = False  # env needs to be reset
 
@@ -145,8 +147,7 @@ if __name__ == '__main__':
         agent.model = load_model("pacman_dqn_model2.h5")
         agent.target_model = load_model("pacman_dqn_targemodel.h5")
     t = 0
-    episodes = 2000
-    for i in range(episodes):
+    while t < 10**7:
         obs = env.reset()
 
 
@@ -157,23 +158,37 @@ if __name__ == '__main__':
         #state = np.reshape(state, [-1, 88, 80, 1])
 
         total_reward = 0
+        j = 0
+        action = agent.act(state)
         while not done:
+            j += 1
             t += 1
             #env.render()
-            action = agent.act(state)
+            '''
+            the agent sees and selects actions on every k
+            th frame instead of every
+            frame, and its last action is repeated on skipped frames
+            Since running the emulator forward for one
+            step requires much less computation than having the agent select an action, this technique allows
+            the agent to play roughly k times more games without significantly increasing the runtime
+            '''
+            if j % k == 0:
+                action = agent.act(state)
+
             next_obs, reward, done, _ = env.step(action)
             next_state = preprocess_observation(next_obs)
             #next_state = np.reshape(next_state, [-1, 88, 80, 1])
             #print(state.shape, next_state.shape)
 
-            reward = reward if not done else -10
+
             total_reward += reward
+            reward = np.clip(reward, -1, 1)
             agent.remember(state, action, reward, next_state, done)
 
             state = next_state
 
             if done:
-                print("episode: {}/{}, score: {}, e: {:.2} t:{}".format(i,episodes,total_reward, agent.epsilon, t))
+                print("score: {}, e: {:.2} frames:{}".format(total_reward, agent.epsilon, t))
                 break
             #train agent with the experience of the episode
 
@@ -187,5 +202,4 @@ if __name__ == '__main__':
             if t%50 == 0:
                 agent.updateTarget()
 
-            if t%1000 == 0:
-                agent.epsilonDecay()
+            agent.epsilonDecay(t)
