@@ -64,7 +64,7 @@ class DQNAgent:
         model.add(Flatten())
         model.add(Dense(512, activation='relu', kernel_initializer=VarianceScaling(), name='dense1'))
         model.add(Dense(self.action_size, activation='relu', kernel_initializer=VarianceScaling(), name='dens2'))
-        model.compile(loss='mse', optimizer=RMSprop(lr=self.lr, momentum=self.momentum))
+        model.compile(loss='mse', optimizer=RMSprop(lr=self.lr))
         return model
 
     def remember(self, action, state, reward, next_state, done):
@@ -82,7 +82,7 @@ class DQNAgent:
 
     #epsilon decay
     def epsilonDecay(self, t):
-        if self.start_epsilon > self.epsilon_min:
+        if self.epsilon > self.epsilon_min:
             self.epsilon = t*(self.epsilon_min- self.start_epsilon)/(10**6) + self.start_epsilon
 
     # train the network off the memory
@@ -195,11 +195,11 @@ if __name__ == '__main__':
             if len(agent.memory) > batch_size:
                 agent.replay(batch_size)
 
-            if t % 10 == 0:
+            if t % 10000 == 0:
                 agent.model.save('pacman_dqn_model2.h5')
                 agent.target_model.save("pacman_dqn_targemodel.h5")
 
-            if t%50 == 0:
+            if t%1000 == 0:
                 agent.updateTarget()
 
             agent.epsilonDecay(t)
