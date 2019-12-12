@@ -8,7 +8,7 @@ LOG_FILE = 'tmp/a3c_log'
 INITIAL_ALPHA_LOW = 1e-3    # log_uniform low limit for learning rate
 INITIAL_ALPHA_HIGH = 1e-3   # log_uniform high limit for learning rate
 
-PARALLEL_SIZE = 1 # parallel thread size 
+PARALLEL_SIZE = 16 # parallel thread size 
 ACTION_SIZE = 5 # action size
 
 INITIAL_ALPHA_LOG_RATE = 0.4226 # log_uniform interpolate rate for learning rate (around 7 * 10^-4)
