@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="becb8b4c-bd70-49a8-a8f4-1ddab006352c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/AS3/a3c_thread.py" beforeDir="false" afterPath="$PROJECT_DIR$/Asynch_network/AS3/a3c_thread.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Asynch_network/AS3/network.py" beforeDir="false" afterPath="$PROJECT_DIR$/Asynch_network/AS3/network.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,17 +17,6 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>state_s</find>
-      <find>gym.make</find>
-      <find>zeroes</find>
-      <find>out_t</find>
-      <find>obs</find>
-      <find>tf.placeholder</find>
-      <find>time</find>
-    </findStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -37,6 +24,11 @@
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Deep_Q_learning/TrainedModel1" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">

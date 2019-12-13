@@ -35,6 +35,10 @@ class A3CTrainingThread(object):
     self.learning_rate_input = learning_rate_input
     self.max_global_time_step = max_global_time_step
 
+    #mario specific paramaters
+    self.xpos_counter = 0
+    self.prev_xpos = 0
+
     self.env = gym_super_mario_bros.make('SuperMarioBros-1-1-v2')
     self.env = JoypadSpace(self.env, RIGHT_ONLY)
 
@@ -97,8 +101,6 @@ class A3CTrainingThread(object):
     rewards = []
     values = []
 
-    terminal_end = False
-
     # copy weights from shared to local
     sess.run( self.sync )
 
@@ -127,6 +129,19 @@ class A3CTrainingThread(object):
         x_t1 = np.reshape(x_t1, (84, 84, 1))
         aux_s = np.delete(self.s_t, 0, axis=2)
         self.s_t = np.append(aux_s, x_t1, axis=2)
+
+
+        #Checks if mario gets stuck
+        if info['x_pos'] == self.prev_xpos:
+          self.xpos_counter += 1
+        else:
+          self.xpos_counter = 0
+        
+        if self.xpos_counter > 250:
+          done = True
+          self.xpos_counter = 0
+
+        self.prev_xpos = info['x_pos']
 
         self.episode_reward += reward
 
