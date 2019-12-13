@@ -151,7 +151,6 @@ class A3CTrainingThread(object):
         self.local_t += 1
         
         if terminal:
-            terminal_end = True
             print("score={}".format(self.episode_reward))
 
             self._record_score(sess, summary_writer, summary_op, score_input,
@@ -168,7 +167,7 @@ class A3CTrainingThread(object):
             break
 
     R = 0.0
-    if not terminal_end:
+    if not terminal:
       R = self.local_network.run_value(sess, self.s_t)
 
     actions.reverse()
