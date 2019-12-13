@@ -14,7 +14,7 @@ through past actions, similar to how human players learn to master games. Anothe
 that seeks to emulate the opposing player. This would allow for you to train a personal fighter that acts like you and could 
 also have useful applications in the e-sports world.  
 
-##File Setup
+## File Setup
 In the repository you will find the two folders. One containing several
 implementations for Deep Q Learning with replay memory and one 
-containing an implementation for Asynchronous one-step DQL.
+containing an implementation for Asynchronous one-step DQL and Asynchronous actor critic.
