@@ -22,9 +22,10 @@ class SFENV:
         Resets the environment and skips starting frames
         '''
         self.env.reset()
-        for i in range(SKIP_FRAMES):
+        for _ in range(SKIP_FRAMES):
             action = ACTIONS["neutral"][0]
             self.ob, _, self.done, self.info = self.env.step(action)
+        return self.ob
     
     def close(self):
         '''
@@ -44,7 +45,7 @@ class SFENV:
         frames are done, should speed up training
         '''
         info = self.info
-        for i in range(frames):
+        for _ in range(frames):
             if self.render:
                 self.env.render()
             self.ob, _, self.done, info = self.env.step(ACTIONS["neutral"][0])
