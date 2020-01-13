@@ -32,6 +32,7 @@ class A3CTrainingThread(object):
                max_global_time_step,
                device):
 
+    self.data = [] #store thread data
     self.thread_index = thread_index
     self.learning_rate_input = learning_rate_input
     self.max_global_time_step = max_global_time_step
@@ -145,8 +146,8 @@ class A3CTrainingThread(object):
             x_t1 = np.reshape(x_t1, (84, 84, 1))
             self.s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
 
-            if USE_LSTM:
-                self.local_network.reset_state()
+            self.data.append(self.episode_reward)
+            
             break
 
     R = 0.0

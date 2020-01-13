@@ -161,3 +161,20 @@ with open(wall_t_fname, 'w') as f:
   f.write(str(wall_t))
 
 saver.save(sess, CHECKPOINT_DIR + '/' + 'checkpoint', global_step = global_t)
+
+#Either write the data to csv files or graph directly
+avg_data = []
+for t_thread in training_threads:
+  d = t_thread.data
+  if len(avg_data) == 0:
+    for i in range(len(d)):
+      avg_data.append(d[i]/PARALLEL_SIZE)
+  else:
+    for i in range(len(d)):
+      avg_data[i]+=(d[i]/PARALLEL_SIZE)
+
+f = open("data.csv", "w") #change this when stopping prematurely
+f.write("AvgScore\n")
+for d in avg_data:
+  file.write(str(d)+"\n")
+file.close()
