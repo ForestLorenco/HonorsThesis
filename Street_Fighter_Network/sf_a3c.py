@@ -176,5 +176,5 @@ for t_thread in training_threads:
 f = open("data.csv", "w") #change this when stopping prematurely
 f.write("AvgScore\n")
 for d in avg_data:
-  file.write(str(d)+"\n")
-file.close()
+  f.write(str(d)+"\n")
+f.close()
