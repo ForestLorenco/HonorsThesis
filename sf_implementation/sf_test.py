@@ -4,7 +4,7 @@ from sfenv import SFENV
 
 
 env = SFENV(True)
-env2 = SFENV(True)
+env2 = SFENV(False)
 print(env.actions_names)
 print(env.actions_space, "Action size")
 try:

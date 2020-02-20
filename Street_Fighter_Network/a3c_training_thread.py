@@ -146,7 +146,7 @@ class A3CTrainingThread(object):
             x_t1 = np.reshape(x_t1, (84, 84, 1))
             self.s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
 
-            self.data.append(self.episode_reward)
+            #self.data.append(self.episode_reward)
             
             break
 

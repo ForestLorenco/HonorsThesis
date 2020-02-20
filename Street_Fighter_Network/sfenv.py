@@ -80,20 +80,20 @@ class SFENV:
                 self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters
-                if self.info["enemy_health"] == 0 and self.info["matches_won"] == 2:
+                if self.info["matches_won"] == 2 or self.info["enemy_matches_won"] == 2:
                     self.done == True
                 return self.ob, self.reward, self.done, self.info
             else:
                 action = ACTIONS[self.actions_names[a]]
-            if self.render:
-                self.env.render()
-            self.ob, _, self.done, self.info = self.env.step(action[0])
-            self.ob, self.done, info = self.wait(action[1])
-            self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
-            self.info = info
-            #Temporary for now, might change this done condition to go to other characters
-            if self.info["enemy_health"] == 0 and self.info["matches_won"] == 2:
-                    self.done == True
-            return self.ob, self.reward, self.done, self.info
+                if self.render:
+                    self.env.render()
+                self.ob, _, self.done, self.info = self.env.step(action[0])
+                self.ob, self.done, info = self.wait(action[1])
+                self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+                self.info = info
+                #Temporary for now, might change this done condition to go to other characters
+                if self.info["matches_won"] == 2 or self.info["enemy_matches_won"] == 2:
+                        self.done == True
+                return self.ob, self.reward, self.done, self.info
         except IndexError:
             print("Index too large for action space")
