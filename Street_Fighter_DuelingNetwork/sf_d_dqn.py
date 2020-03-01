@@ -3,6 +3,8 @@ import numpy as np
 import random 
 import time
 
+import signal
+
 from sfenv import SFENV
 
 from keras import backend as K
@@ -19,10 +21,13 @@ from keras.layers import merge
 from keras.models import Model
 from keras.layers import Lambda
 
+import tensorflow as tf
 
 import os.path
 import collections
-
+from tensorflow.python.client import device_lib
+print(device_lib.list_local_devices())
+assert len(K.tensorflow_backend._get_available_gpus()) > 0
 class SF_Dueling:
 
     def __init__(self):
@@ -38,14 +43,15 @@ class SF_Dueling:
         self.start_epsilon = 1.0
         self.epsilon = self.start_epsilon# exploration rate
         self.epsilon_min = 0.01  # min for exploration rate
-        #self.epsilon_decay = 0.995  # how fast epsilon decays
+        self.decay_rate = 0.99
         self.lr = 0.0001
 
-        self.total_time = 10**7
+        self.total_time = 3*(10**6)
         self.scores = []
+        self.stop_requested = False
 
         #build the model
-        self._build_model
+        self._build_model()
 
     def _build_model(self):
         self.model = Sequential()
@@ -78,6 +84,7 @@ class SF_Dueling:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
         #print("yup")
+        state = np.reshape(state, (1,84,84,4))
         act_values = self.model.predict(state)
         return np.argmax(act_values[0])
     
@@ -87,31 +94,27 @@ class SF_Dueling:
             self.epsilon = t*(self.epsilon_min- self.start_epsilon)/(10**7) + self.start_epsilon
     
     # train the network off the memory
-    def replay(self, batch_size):
+    def replay(self, batch_size, t):
         minibatch = random.sample(self.memory, batch_size)  # gets a sample of size batch_size from memory
-        states = []
-        target_fs = []
-        rewards = []
+        s_batch = []
+        targets = np.zeros((batch_size, self.action_size))
+        i = 0
         for state, action, reward, nextstate, done in minibatch:
-            target = reward
+            s_batch.append(state)
+            state = np.reshape(state, (1,84,84,4))
+            nextstate = np.reshape(nextstate, (1,84,84,4))
+            targets[i] = self.model.predict(state, batch_size = 1)
+            fut_action = self.target_model.predict(nextstate, batch_size = 1)
+            targets[i, action] = reward
+            if done == False:
+                targets[i, action] += self.decay_rate * np.max(fut_action)
+            i+=1
+        s_batch = np.array(s_batch)
+        loss = self.model.train_on_batch(s_batch, targets)
+        
+        if t %100 == 0:
+            print("Loss of model is", loss)
 
-            if not done:
-                nextstate = np.reshape(nextstate, [-1, 88, 80, 1])
-                #compute target state with the target model for higher consistancy
-                target = (reward + self.gamma * np.amax(self.target_model.predict(nextstate)[0]))
-            temp = np.reshape(state, [-1, 88, 80, 1])
-            target_f = self.model.predict(temp)
-            target_f[0][action] = target
-            target_fs.append(target_f)
-
-            states.append(state)
-        states = np.array(states)
-        target_fs = np.array(target_fs)
-        target_fs = target_fs.reshape(32,9)
-        #print(states.shape, target_fs.shape)
-        self.model.predict(states)
-        self.model.fit(states, target_fs, epochs=1, verbose=0)
-        #print("Time for model.fit to run is", end-start) #better but still takes far too long
     
     def updateTarget(self):
         self.target_model.set_weights(self.model.get_weights())
@@ -126,28 +129,41 @@ class SF_Dueling:
         self.target_model.load_weights(path)
         print("Succesfully loaded network.")
 
+    def write_data(self):
+        f = open("Data.csv", "w")
+        f.write("Score\n")
+        for d in self.scores:
+            f.write(str(d)+"\n")
+        f.close()
+
     def train(self):
         def signal_handler(signal, frame):
-            global stop_requested
             print('You pressed Ctrl+C!')
-            stop_requested = True
+            self.stop_requested = True
 
-        if os.path.isfile("pacman_dqn_model2.h5"):
+        if os.path.isfile("sf2_dqn_model2.h5"):
             print("Loading model")
-            self.load_network("pacman_dqn_model2.h5")
+            self.load_network("sf2_dqn_model2.h5")
+        
+        signal.signal(signal.SIGINT, signal_handler)
+
+        
         
         t = 0
         total_reward = 0
         batch_size = 32
-        start_time = time.time
+        start_time = time.time()
         while t < self.total_time:
             
-            if stop_requested:
-                self.save_network('pacman_dqn_model2.h5')
+            if self.stop_requested:
+                self.save_network('sf2_dqn_model2.h5')
+                self.write_data()
+                exit(0)
             
             t += 1
 
             #Get the action
+            #print(self.s_t.shape)
             action = self.act(self.s_t)
 
             prev = self.s_t
@@ -164,6 +180,7 @@ class SF_Dueling:
             if terminal:
                 #save score for graphing
                 self.scores.append(total_reward)
+                total_reward = 0
 
                 #reset env
                 obs = self.env.reset()
@@ -174,17 +191,25 @@ class SF_Dueling:
                 #report performance
                 elapsed_time = time.time() - start_time
                 steps_per_sec = t / elapsed_time
-                print("### Performance : {} STEPS in {:.0f} sec. {:.0f} STEPS/sec. {:.2f}M STEPS/hour".format(
-                        t,  elapsed_time, steps_per_sec, steps_per_sec * 3600 / 1000000.))
+                print("### Score:{} Epsilon: {} Performance : {} STEPS in {:.0f} sec. {:.0f} STEPS/sec. {:.2f}M STEPS/hour".format(
+                        total_reward, self.epsilon, t, elapsed_time, steps_per_sec, steps_per_sec * 3600 / 1000000.))
             
             if len(self.memory) > batch_size:
-                self.replay(batch_size)
+                self.replay(batch_size, t)
             
             if t % 10000 == 0:
-                self.save_network('pacman_dqn_model2.h5')
+                self.save_network('sf2_dqn_model2.h5')
                 
             self.epsilonDecay(t)
+        self.write_data()
+        signal.pause()
             
 if __name__ == "__main__":
+    
+    print(tf.test.is_gpu_available()) # True/False
+
+    # Or only check for gpu's with cuda support
+    print(tf.test.is_gpu_available(cuda_only=True)) 
+
     agent = SF_Dueling()
     agent.train()
