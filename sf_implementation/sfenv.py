@@ -6,12 +6,15 @@ from sf_constants import SKIP_FRAMES
 import random as rand
 
 class SFENV:
-    def __init__(self, render=False):
+    def __init__(self, render=False, multi=True):
         '''
         Wrapper class for street fighter II environment. This has implementations for simple
         movements for easy training as well as wait times for move animations. 
         '''
-        self.env = retrowrapper.RetroWrapper('StreetFighterIISpecialChampionEdition-Genesis')
+        if multi:
+            self.env = retrowrapper.RetroWrapper('StreetFighterIISpecialChampionEdition-Genesis')
+        else:
+            self.env = retro.make(game='StreetFighterIISpecialChampionEdition-Genesis')
         self.render = render
         self.ob, self.reward, self.done, self.info = None, None, None, None
         self.actions_space = len(ACTIONS)+len(COMBOS)
