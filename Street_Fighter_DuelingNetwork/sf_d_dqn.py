@@ -32,7 +32,7 @@ class SF_Dueling:
 
     def __init__(self):
     #things for the learning
-        self.env = SFENV(multi=False)
+        self.env = SFENV(multi=False,skip=False)
         obs = self.env.reset()
         x_t = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (84, 84))
         self.s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
