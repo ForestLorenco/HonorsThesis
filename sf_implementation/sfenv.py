@@ -6,7 +6,7 @@ from sf_constants import SKIP_FRAMES
 import random as rand
 
 class SFENV:
-    def __init__(self, render=False, multi=True):
+    def __init__(self, render=False, multi=True, skip=True):
         '''
         Wrapper class for street fighter II environment. This has implementations for simple
         movements for easy training as well as wait times for move animations. 
@@ -20,6 +20,8 @@ class SFENV:
         self.actions_space = len(ACTIONS)+len(COMBOS)
         self.actions_names = list(ACTIONS.keys())
         self.actions_names.extend(['HURRICANE_KICK', 'SHORYUKEN', 'HADOKEN'])
+        self.dead = False
+        self.skip = skip
 
     def reset(self):
         '''
@@ -78,9 +80,22 @@ class SFENV:
                 if self.render:
                     self.env.render()
                 action = COMBOS[a%len(ACTIONS)]
-                self.ob, self.done, info = self.execute_combo(action[0])
-                self.ob, self.done, info = self.wait(action[1])
-                self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+                
+                if self.skip:
+                    self.ob, self.done, info = self.wait(action[1])
+                    self.ob, self.done, self.info = self.execute_combo(action[0])
+                else:
+                    self.ob, self.done, info = self.execute_combo(action[0])
+                #reward calculations
+                if self.dead:
+                    if self.info["health"] == 176:
+                        self.dead = False
+                    self.reward = 0
+                if (self.info["health"] == -1 or self.info["health"] == 0):
+                    self.dead = True
+                else:
+                    self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters
                 if self.info["matches_won"] == 2 or self.info["enemy_matches_won"] == 2:
@@ -90,9 +105,23 @@ class SFENV:
                 action = ACTIONS[self.actions_names[a]]
                 if self.render:
                     self.env.render()
-                self.ob, _, self.done, self.info = self.env.step(action[0])
-                self.ob, self.done, info = self.wait(action[1])
-                self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+                
+                if self.skip:
+                    self.ob, _, self.done, self.info = self.env.step(action[0])
+                    self.ob, self.done, info = self.wait(action[1])
+                else:
+                    self.ob, _, self.done, info = self.env.step(action[0])
+                #reward calculations
+                if self.dead:
+                    if self.info["health"] == 176:
+                        self.dead = False
+                    self.reward = 0
+                if (self.info["health"] == -1 or self.info["health"] == 0):
+                    self.dead = True
+                else:
+                    self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+
+
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters
                 if self.info["matches_won"] == 2 or self.info["enemy_matches_won"] == 2:
