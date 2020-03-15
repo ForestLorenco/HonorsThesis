@@ -30,7 +30,7 @@ print(device_lib.list_local_devices())
 assert len(K.tensorflow_backend._get_available_gpus()) > 0
 class SF_Dueling:
 
-    def __init__(self):
+    def __init__(self, start_epsilon = 1.0, resume=0):
     #things for the learning
         self.env = SFENV(multi=False,skip=False)
         obs = self.env.reset()
@@ -40,7 +40,7 @@ class SF_Dueling:
         self.action_size = self.env.actions_space
         self.memory = collections.deque(maxlen=20000)
         self.gamma = 0.95  # this is discount rate
-        self.start_epsilon = 1.0
+        self.start_epsilon = start_epsilon
         self.epsilon = self.start_epsilon# exploration rate
         self.epsilon_min = 0.01  # min for exploration rate
         self.decay_rate = 0.99
@@ -52,6 +52,7 @@ class SF_Dueling:
 
         #build the model
         self._build_model()
+        self.resume = resume
 
     def _build_model(self):
         self.model = Sequential()
@@ -91,7 +92,7 @@ class SF_Dueling:
     #epsilon decay
     def epsilonDecay(self, t):
         if self.epsilon > self.epsilon_min:
-            self.epsilon = t*(self.epsilon_min- self.start_epsilon)/(10**7) + self.start_epsilon
+            self.epsilon = t*(self.epsilon_min- self.start_epsilon)/(self.total_time) + self.start_epsilon
     
     # train the network off the memory
     def replay(self, batch_size, t):
@@ -149,7 +150,7 @@ class SF_Dueling:
 
         
         
-        t = 0
+        t = self.resume
         total_reward = 0
         batch_size = 32
         start_time = time.time()
@@ -180,7 +181,7 @@ class SF_Dueling:
             if terminal:
                 #save score for graphing
                 self.scores.append(total_reward)
-                total_reward = 0
+                
 
                 #reset env
                 obs = self.env.reset()
@@ -193,6 +194,7 @@ class SF_Dueling:
                 steps_per_sec = t / elapsed_time
                 print("### Score:{} Epsilon: {} Performance : {} STEPS in {:.0f} sec. {:.0f} STEPS/sec. {:.2f}M STEPS/hour".format(
                         total_reward, self.epsilon, t, elapsed_time, steps_per_sec, steps_per_sec * 3600 / 1000000.))
+                total_reward = 0
             
             if len(self.memory) > batch_size:
                 self.replay(batch_size, t)
@@ -211,5 +213,5 @@ if __name__ == "__main__":
     # Or only check for gpu's with cuda support
     print(tf.test.is_gpu_available(cuda_only=True)) 
 
-    agent = SF_Dueling()
+    agent = SF_Dueling(start_epsilon=0.6, resume = 1000000)
     agent.train()

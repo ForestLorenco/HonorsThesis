@@ -91,7 +91,7 @@ class SFENV:
                     if self.info["health"] == 176:
                         self.dead = False
                     self.reward = 0
-                if (self.info["health"] == -1 or self.info["health"] == 0):
+                if (self.info["health"] <= 0):
                     self.dead = True
                 else:
                     self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
@@ -116,7 +116,7 @@ class SFENV:
                     if self.info["health"] == 176:
                         self.dead = False
                     self.reward = 0
-                if (self.info["health"] == -1 or self.info["health"] == 0):
+                if (self.info["health"] <= 0):
                     self.dead = True
                 else:
                     self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
