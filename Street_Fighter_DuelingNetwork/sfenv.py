@@ -50,24 +50,32 @@ class SFENV:
         Forces agent to wait before inputing a new move until after animation 
         frames are done, should speed up training
         '''
+        reward = 0
         info = self.info
         for _ in range(frames):
             if self.render:
                 self.env.render()
-            self.ob, _, self.done, info = self.env.step(ACTIONS["neutral"][0])
+            self.ob, _, self.done, n_info = self.env.step(ACTIONS["neutral"][0])
             #time.sleep(.5)
-        return self.ob, self.done, info
+            if(not self.dead):
+                reward += (info["enemy_health"] - n_info["enemy_health"]) - (info["health"] - n_info["health"])
+            info = n_info
+        return self.ob, self.done, info, reward
 
     def execute_combo(self, combo):
         '''
         Given a combo (a list of actions), executes the combo
         '''
         info = self.info
+        reward = 0
         for a in combo:
             if self.render:
                 self.env.render()
-            self.ob, _, self.done, info = self.env.step(a)
-        return self.ob, self.done, info
+            self.ob, _, self.done, n_info = self.env.step(a)
+            if(not self.dead):
+                reward += (info["enemy_health"] - n_info["enemy_health"]) - (info["health"] - n_info["health"])
+            info = n_info
+        return self.ob, self.done, info, reward
 
 
     def step(self, a):
@@ -80,10 +88,12 @@ class SFENV:
                 if self.render:
                     self.env.render()
                 action = COMBOS[a%len(ACTIONS)]
-                
+
+                reward = 0
                 if self.skip:
-                    self.ob, self.done, info = self.wait(action[1])
-                    self.ob, self.done, self.info = self.execute_combo(action[0])
+                    self.ob, self.done, self.info,reward = self.execute_combo(action[0])
+                    self.ob, self.done, info, w_reward = self.wait(action[1])
+                    reward+= w_reward
                 else:
                     self.ob, self.done, info = self.execute_combo(action[0])
                 #reward calculations
@@ -94,7 +104,10 @@ class SFENV:
                 if (self.info["health"] <= 0):
                     self.dead = True
                 else:
-                    self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+                    if not self.skip:
+                        reward += (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+                    self.reward = reward
+
 
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters
@@ -106,21 +119,24 @@ class SFENV:
                 if self.render:
                     self.env.render()
                 
-                if self.skip:
+                reward = 0
+                if (a >= 10) and self.skip:
                     self.ob, _, self.done, self.info = self.env.step(action[0])
-                    self.ob, self.done, info = self.wait(action[1])
+                    self.ob, self.done, info, reward = self.wait(action[1])
                 else:
                     self.ob, _, self.done, info = self.env.step(action[0])
                 #reward calculations
                 if self.dead:
+                    #print("we are dead")
                     if self.info["health"] == 176:
                         self.dead = False
                     self.reward = 0
                 if (self.info["health"] <= 0):
                     self.dead = True
                 else:
-                    self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
-
+                    if a < 10 or (not self.skip):
+                        reward += (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+                    self.reward = reward
 
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters

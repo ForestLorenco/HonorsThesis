@@ -32,7 +32,7 @@ class SF_Dueling:
 
     def __init__(self, start_epsilon = 1.0, resume=0):
     #things for the learning
-        self.env = SFENV(multi=False,skip=False)
+        self.env = SFENV(multi=False,skip=True)
         obs = self.env.reset()
         x_t = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (84, 84))
         self.s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
@@ -46,7 +46,7 @@ class SF_Dueling:
         self.decay_rate = 0.99
         self.lr = 0.0001
 
-        self.total_time = 3*(10**6)
+        self.total_time = 15*(10**5)
         self.scores = []
         self.stop_requested = False
 
