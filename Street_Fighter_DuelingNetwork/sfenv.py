@@ -95,24 +95,31 @@ class SFENV:
                     self.ob, self.done, info, w_reward = self.wait(action[1])
                     reward+= w_reward
                 else:
-                    self.ob, self.done, info = self.execute_combo(action[0])
+                    self.ob, self.done, info, reward = self.execute_combo(action[0])
                 #reward calculations
                 if self.dead:
-                    if self.info["health"] == 176:
+                    if self.info["health"] == 176 or self.info["enemy_health"] == 176:
                         self.dead = False
                     self.reward = 0
-                if (self.info["health"] <= 0):
+                if (self.info["health"] <= 0) or (self.info["enemy_health"] <= 0):
                     self.dead = True
+                    self.reward = reward
                 else:
                     if not self.skip:
                         reward += (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
                     self.reward = reward
 
+                if self.info["matches_won"] < info["matches_won"]:
+                    
+                    self.reward += 176
 
+                if self.info["enemy_matches_won"] < info["enemy_matches_won"]:
+                    
+                    self.reward -= 176
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters
                 if self.info["matches_won"] == 2 or self.info["enemy_matches_won"] == 2:
-                    self.done == True
+                    self.done = True
                 return self.ob, self.reward, self.done, self.info
             else:
                 action = ACTIONS[self.actions_names[a]]
@@ -128,20 +135,28 @@ class SFENV:
                 #reward calculations
                 if self.dead:
                     #print("we are dead")
-                    if self.info["health"] == 176:
+                    if self.info["health"] == 176 or self.info["enemy_health"] == 176:
                         self.dead = False
                     self.reward = 0
-                if (self.info["health"] <= 0):
+                if (self.info["health"] <= 0) or (self.info["enemy_health"] <= 0):
                     self.dead = True
+                    self.reward = reward
                 else:
                     if a < 10 or (not self.skip):
                         reward += (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
                     self.reward = reward
 
+                if self.info["matches_won"] < info["matches_won"]:
+                    
+                    self.reward += 176
+                    
+                if self.info["enemy_matches_won"] < info["enemy_matches_won"]:
+                    
+                    self.reward -= 176
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters
                 if self.info["matches_won"] == 2 or self.info["enemy_matches_won"] == 2:
-                        self.done == True
+                    self.done = True
                 return self.ob, self.reward, self.done, self.info
         except IndexError:
             print("Index too large for action space")

@@ -43,7 +43,8 @@ init = tf.global_variables_initializer()
 sess.run(init)
 
 saver = tf.train.Saver()
-checkpoint = tf.train.get_checkpoint_state(CHECKPOINT_DIR)
+c =  "SkipNetwork/"+CHECKPOINT_DIR#set checkpoint folder
+checkpoint = tf.train.get_checkpoint_state(c)
 if checkpoint and checkpoint.model_checkpoint_path:
   saver.restore(sess, checkpoint.model_checkpoint_path)
   print("checkpoint loaded:", checkpoint.model_checkpoint_path)

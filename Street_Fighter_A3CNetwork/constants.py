@@ -5,8 +5,8 @@ RMSP_ALPHA = 0.99 # decay parameter for RMSProp
 RMSP_EPSILON = 0.1 # epsilon parameter for RMSProp
 CHECKPOINT_DIR = 'checkpoints'
 LOG_FILE = 'tmp/a3c_log'
-INITIAL_ALPHA_LOW = 1e-3    # log_uniform low limit for learning rate
-INITIAL_ALPHA_HIGH = 1e-3   # log_uniform high limit for learning rate
+INITIAL_ALPHA_LOW = 1e-4    # log_uniform low limit for learning rate
+INITIAL_ALPHA_HIGH = 1e-2   # log_uniform high limit for learning rate
 
 PARALLEL_SIZE = 16 # parallel thread size 
 ACTION_SIZE = 20 # action size

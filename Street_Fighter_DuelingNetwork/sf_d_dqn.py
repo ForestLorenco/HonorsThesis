@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import random 
 import time
+import sys
 
 import signal
 
@@ -27,12 +28,12 @@ import os.path
 import collections
 from tensorflow.python.client import device_lib
 print(device_lib.list_local_devices())
-assert len(K.tensorflow_backend._get_available_gpus()) > 0
+#assert len(K.tensorflow_backend._get_available_gpus()) > 0
 class SF_Dueling:
 
-    def __init__(self, start_epsilon = 1.0, resume=0):
+    def __init__(self, start_epsilon = 1.0, resume=0,render=False):
     #things for the learning
-        self.env = SFENV(multi=False,skip=True)
+        self.env = SFENV(multi=False,skip=True, render=render)
         obs = self.env.reset()
         x_t = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (84, 84))
         self.s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
@@ -205,13 +206,42 @@ class SF_Dueling:
             self.epsilonDecay(t)
         self.write_data()
         signal.pause()
+    
+    def display(self, network):
+        def signal_handler(signal, frame):
+            print('You pressed Ctrl+C!')
+            self.stop_requested = True
+
+        if os.path.isfile(network+"/sf2_dqn_model2.h5"):
+            print("Loading model")
+            self.load_network(network+"/sf2_dqn_model2.h5")
+        
+        signal.signal(signal.SIGINT, signal_handler)
+        total_reward = 0
+        terminal = False
+        while not terminal:
+            if self.stop_requested:
+                exit(0)
+
+            action = self.act(self.s_t)
+
+            obs, reward, terminal, info = self.env.step(action)
+            x_t1 = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (84, 84))
+            x_t1 = np.reshape(x_t1, (84, 84, 1))
+            aux_s = np.delete(self.s_t, 0, axis=2)
+            self.s_t = np.append(aux_s, x_t1, axis=2)
+            total_reward += reward
+        print(total_reward)
             
 if __name__ == "__main__":
-    
-    print(tf.test.is_gpu_available()) # True/False
+    if len(sys.argv) > 1:
+        agent = SF_Dueling(render=True)
+        agent.display(sys.argv[1])
+    else:
+        print(tf.test.is_gpu_available()) # True/False
 
-    # Or only check for gpu's with cuda support
-    print(tf.test.is_gpu_available(cuda_only=True)) 
+        # Or only check for gpu's with cuda support
+        print(tf.test.is_gpu_available(cuda_only=True)) 
 
-    agent = SF_Dueling(start_epsilon=0.6, resume = 1000000)
-    agent.train()
+        agent = SF_Dueling(start_epsilon=0.6, resume = 0)
+        agent.train()
