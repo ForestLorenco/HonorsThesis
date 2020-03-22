@@ -163,18 +163,14 @@ with open(wall_t_fname, 'w') as f:
 saver.save(sess, CHECKPOINT_DIR + '/' + 'checkpoint', global_step = global_t)
 
 #Either write the data to csv files or graph directly
-'''
-avg_data = []
-c = 0
-for t_thread in training_threads:
-  d = t_thread.data
-  c+= 1
-  f = open("data"+str(c)+".csv", "w") #change this when stopping prematurely
-  f.write("Score\n")
-  for i in d:
-    f.write(str(d)+"\n")
-  f.close()
-'''
+
+t_thread = training_threads[1]
+d = t_thread.data
+f = open("data.csv", "w") #change this when stopping prematurely
+f.write("Score\n")
+for i in range(len(d)):
+    f.write(str(d[i])+"\n")
+f.close()
   
 
 

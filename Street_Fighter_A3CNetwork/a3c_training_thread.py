@@ -37,7 +37,8 @@ class A3CTrainingThread(object):
     self.learning_rate_input = learning_rate_input
     self.max_global_time_step = max_global_time_step
 
-    self.env = SFENV()
+    self.env = SFENV(skip=True)
+    #print(self.env.skip)
 
     if USE_LSTM:
       self.local_network = GameACLSTMNetwork(ACTION_SIZE, thread_index, device)
@@ -135,18 +136,19 @@ class A3CTrainingThread(object):
         self.local_t += 1
         
         if terminal:
-            print("score={}".format(self.episode_reward))
+            print("Thread {} score={}".format(self.thread_index,self.episode_reward))
 
             self._record_score(sess, summary_writer, summary_op, score_input,
                                 self.episode_reward, global_t)
+            if self.thread_index == 1:
+              self.data.append(self.episode_reward)
                 
             self.episode_reward = 0
             obs = self.env.reset()
             x_t = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (84, 84))
             x_t1 = np.reshape(x_t1, (84, 84, 1))
             self.s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
-
-            #self.data.append(self.episode_reward)
+            
             
             break
 

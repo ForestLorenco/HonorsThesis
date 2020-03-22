@@ -6,7 +6,7 @@ from sf_constants import SKIP_FRAMES
 import random as rand
 
 class SFENV:
-    def __init__(self, render=False, multi=True):
+    def __init__(self, render=False, multi=True, skip=True):
         '''
         Wrapper class for street fighter II environment. This has implementations for simple
         movements for easy training as well as wait times for move animations. 
@@ -20,6 +20,8 @@ class SFENV:
         self.actions_space = len(ACTIONS)+len(COMBOS)
         self.actions_names = list(ACTIONS.keys())
         self.actions_names.extend(['HURRICANE_KICK', 'SHORYUKEN', 'HADOKEN'])
+        self.dead = False
+        self.skip = skip
 
     def reset(self):
         '''
@@ -48,24 +50,32 @@ class SFENV:
         Forces agent to wait before inputing a new move until after animation 
         frames are done, should speed up training
         '''
+        reward = 0
         info = self.info
         for _ in range(frames):
             if self.render:
                 self.env.render()
-            self.ob, _, self.done, info = self.env.step(ACTIONS["neutral"][0])
+            self.ob, _, self.done, n_info = self.env.step(ACTIONS["neutral"][0])
             #time.sleep(.5)
-        return self.ob, self.done, info
+            if(not self.dead):
+                reward += (info["enemy_health"] - n_info["enemy_health"]) - (info["health"] - n_info["health"])
+            info = n_info
+        return self.ob, self.done, info, reward
 
     def execute_combo(self, combo):
         '''
         Given a combo (a list of actions), executes the combo
         '''
         info = self.info
+        reward = 0
         for a in combo:
             if self.render:
                 self.env.render()
-            self.ob, _, self.done, info = self.env.step(a)
-        return self.ob, self.done, info
+            self.ob, _, self.done, n_info = self.env.step(a)
+            if(not self.dead):
+                reward += (info["enemy_health"] - n_info["enemy_health"]) - (info["health"] - n_info["health"])
+            info = n_info
+        return self.ob, self.done, info, reward
 
 
     def step(self, a):
@@ -78,9 +88,27 @@ class SFENV:
                 if self.render:
                     self.env.render()
                 action = COMBOS[a%len(ACTIONS)]
-                self.ob, self.done, info = self.execute_combo(action[0])
-                self.ob, self.done, info = self.wait(action[1])
-                self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+
+                reward = 0
+                if self.skip:
+                    self.ob, self.done, self.info,reward = self.execute_combo(action[0])
+                    self.ob, self.done, info, w_reward = self.wait(action[1])
+                    reward+= w_reward
+                else:
+                    self.ob, self.done, info = self.execute_combo(action[0])
+                #reward calculations
+                if self.dead:
+                    if self.info["health"] == 176:
+                        self.dead = False
+                    self.reward = 0
+                if (self.info["health"] <= 0):
+                    self.dead = True
+                else:
+                    if not self.skip:
+                        reward += (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+                    self.reward = reward
+
+
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters
                 if self.info["matches_won"] == 2 or self.info["enemy_matches_won"] == 2:
@@ -90,9 +118,26 @@ class SFENV:
                 action = ACTIONS[self.actions_names[a]]
                 if self.render:
                     self.env.render()
-                self.ob, _, self.done, self.info = self.env.step(action[0])
-                self.ob, self.done, info = self.wait(action[1])
-                self.reward = (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+                
+                reward = 0
+                if (a >= 10) and self.skip:
+                    self.ob, _, self.done, self.info = self.env.step(action[0])
+                    self.ob, self.done, info, reward = self.wait(action[1])
+                else:
+                    self.ob, _, self.done, info = self.env.step(action[0])
+                #reward calculations
+                if self.dead:
+                    #print("we are dead")
+                    if self.info["health"] == 176:
+                        self.dead = False
+                    self.reward = 0
+                if (self.info["health"] <= 0):
+                    self.dead = True
+                else:
+                    if a < 10 or (not self.skip):
+                        reward += (self.info["enemy_health"] - info["enemy_health"]) - (self.info["health"] - info["health"]) 
+                    self.reward = reward
+
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters
                 if self.info["matches_won"] == 2 or self.info["enemy_matches_won"] == 2:

@@ -54,13 +54,16 @@ env = SFENV(render=True, multi=False)
 obs = env.reset()
 x_t = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (84, 84))
 s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
-
+t = 0
+t_reward = 0
 while True:
   pi_values = global_network.run_policy(sess, s_t)
-
+  t+=1
   action = choose_action(pi_values)
   obs, reward, terminal, info = env.step(action)
-
+  t_reward += reward 
+  if t%100 == 0:
+    print(t_reward)
   if terminal:
     env.close()
   else:
