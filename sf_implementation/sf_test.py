@@ -24,7 +24,9 @@ try:
         print()
         #env2.step(action2)
         total_reward += reward
-        print("Reward:{}, Done:{}, E_Matches:{}, matches, {}, Action:{}, Health:{}, Enemy Health:{}".format(total_reward, done, env.info['enemy_matches_won'], env.info["matches_won"],env.actions_names[action],info["health"], info["enemy_health"]))
+        print(info)
+        break
+        #print("Reward:{}, Done:{}, E_Matches:{}, matches, {}, Action:{}, Health:{}, Enemy Health:{}".format(total_reward, done, env.info['enemy_matches_won'], env.info["matches_won"],env.actions_names[action],info["health"], info["enemy_health"]))
         '''
         if env.info["matches_won"] > 0:
             break

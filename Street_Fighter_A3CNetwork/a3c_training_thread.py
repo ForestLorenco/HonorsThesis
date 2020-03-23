@@ -31,13 +31,13 @@ class A3CTrainingThread(object):
                grad_applier,
                max_global_time_step,
                device):
-
+    print("Initializing Thread", thread_index )
     self.data = [] #store thread data
     self.thread_index = thread_index
     self.learning_rate_input = learning_rate_input
     self.max_global_time_step = max_global_time_step
 
-    self.env = SFENV(skip=True)
+    self.env = SFENV(skip=False)
     #print(self.env.skip)
 
     if USE_LSTM:
@@ -128,10 +128,14 @@ class A3CTrainingThread(object):
         aux_s = np.delete(self.s_t, 0, axis=2)
         self.s_t = np.append(aux_s, x_t1, axis=2)
 
-        self.episode_reward += reward
+        
 
         # clip reward
         rewards.append( np.clip(reward, -1, 1) )
+        self.episode_reward = info["enemy_health"]-info["health"]+info["matches_won"]*176-info["enemy_matches_won"]*176
+        if self.thread_index == 0:
+          print("Reward:{}, Done:{}, E_Matches:{}, matches, {}, Action:{}, Health:{}, Enemy Health:{}".format(self.episode_reward, terminal, info['enemy_matches_won'], info["matches_won"],self.env.actions_names[action],info["health"], info["enemy_health"]))
+        
 
         self.local_t += 1
         
@@ -208,8 +212,8 @@ class A3CTrainingThread(object):
       self.prev_local_t += PERFORMANCE_LOG_INTERVAL
       elapsed_time = time.time() - self.start_time
       steps_per_sec = global_t / elapsed_time
-      print("### Performance : {} STEPS in {:.0f} sec. {:.0f} STEPS/sec. {:.2f}M STEPS/hour".format(
-        global_t,  elapsed_time, steps_per_sec, steps_per_sec * 3600 / 1000000.))
+      print("### Performance : {}  STEPS in {:.0f} sec. {:.0f} LR {} STEPS/sec. {:.2f}M STEPS/hour".format(
+        global_t,  elapsed_time, steps_per_sec, cur_learning_rate, steps_per_sec * 3600 / 1000000.))
 
     # return advanced local step size
     diff_local_t = self.local_t - start_local_t
