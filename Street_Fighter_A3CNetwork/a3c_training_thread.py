@@ -37,8 +37,8 @@ class A3CTrainingThread(object):
     self.learning_rate_input = learning_rate_input
     self.max_global_time_step = max_global_time_step
 
-    self.env = SFENV(skip=False)
-    #print(self.env.skip)
+    self.env = SFENV(skip=True)
+    print("Skip:",self.env.skip)
 
     if USE_LSTM:
       self.local_network = GameACLSTMNetwork(ACTION_SIZE, thread_index, device)
@@ -132,10 +132,7 @@ class A3CTrainingThread(object):
 
         # clip reward
         rewards.append( np.clip(reward, -1, 1) )
-        self.episode_reward = info["enemy_health"]-info["health"]+info["matches_won"]*176-info["enemy_matches_won"]*176
-        if self.thread_index == 0:
-          print("Reward:{}, Done:{}, E_Matches:{}, matches, {}, Action:{}, Health:{}, Enemy Health:{}".format(self.episode_reward, terminal, info['enemy_matches_won'], info["matches_won"],self.env.actions_names[action],info["health"], info["enemy_health"]))
-        
+        self.episode_reward += reward
 
         self.local_t += 1
         
