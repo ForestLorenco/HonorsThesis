@@ -157,7 +157,7 @@ class GameACLSTMNetwork(GameACNetwork):
     GameACNetwork.__init__(self, action_size, thread_index, device)
 
     scope_name = "net_" + str(self._thread_index)
-    with tf.device(self._device), tf.variable_scope(scope_name) as scope:
+    with tf.device(self._device), tf.variable_scope(scope_name, reuse=tf.AUTO_REUSE) as scope:
       self.W_conv1, self.b_conv1 = self._conv_variable([8, 8, 4, 16])  # stride=4
       self.W_conv2, self.b_conv2 = self._conv_variable([4, 4, 16, 32]) # stride=2
       
@@ -217,8 +217,8 @@ class GameACLSTMNetwork(GameACNetwork):
       self.v = tf.reshape( v_, [-1] )
 
       scope.reuse_variables()
-      self.W_lstm = tf.get_variable("basic_lstm_cell/weights")
-      self.b_lstm = tf.get_variable("basic_lstm_cell/biases")
+      self.W_lstm = tf.get_variable("basic_lstm_cell/kernel")
+      self.b_lstm = tf.get_variable("basic_lstm_cell/bias")
 
       self.reset_state()
       
