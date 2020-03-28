@@ -37,7 +37,7 @@ class A3CTrainingThread(object):
     self.learning_rate_input = learning_rate_input
     self.max_global_time_step = max_global_time_step
 
-    self.env = SFENV(skip=False)
+    self.env = SFENV(skip=True)
     print("Skip:",self.env.skip)
 
     if USE_LSTM:
