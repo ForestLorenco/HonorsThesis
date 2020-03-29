@@ -43,7 +43,7 @@ init = tf.global_variables_initializer()
 sess.run(init)
 
 saver = tf.train.Saver()
-c =  "SkipNetwork/"+CHECKPOINT_DIR#set checkpoint folder
+c =  "SkipNetworkOldRew/"+CHECKPOINT_DIR#set checkpoint folder
 checkpoint = tf.train.get_checkpoint_state(c)
 if checkpoint and checkpoint.model_checkpoint_path:
   saver.restore(sess, checkpoint.model_checkpoint_path)
@@ -51,25 +51,35 @@ if checkpoint and checkpoint.model_checkpoint_path:
 else:
   print("Could not find old checkpoint")
 
-env = SFENV(render=True, multi=False)
+env = SFENV(render=False, multi=False, skip=False)
 obs = env.reset()
 x_t = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (84, 84))
 s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
 t = 0
 t_reward = 0
+times = 0
+wins = 0
 while True:
   pi_values = global_network.run_policy(sess, s_t)
   t+=1
   action = choose_action(pi_values)
   obs, reward, terminal, info = env.step(action)
-  t_reward += reward 
-  if t%100 == 0:
-    print(t_reward)
+  t_reward += reward   
   if terminal:
-    env.close()
+    
+    times += 1
+    if info["matches_won"] == 2:
+      wins += 1
+    if times == 100:
+      env.close()
+      break
+    obs = env.reset()
+    x_t = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (84, 84))
+    s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
+    print("Games:", times,"Wins", wins)
   else:
     x_t1 = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (84, 84))
     x_t1 = np.reshape(x_t1, (84, 84, 1))
     aux_s = np.delete(s_t, 0, axis=2)
     s_t = np.append(aux_s, x_t1, axis=2)
-    
+print("Win rate over 100 games is", wins/100)    

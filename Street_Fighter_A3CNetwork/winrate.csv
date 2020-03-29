@@ -1,0 +1,11 @@
+model,winrate (100 games), notes
+Skip Old R, 0.0, Prioritizes jump punching with occasional hadoken at range. 
+No Skip Old R, 0.04, Learned basic combo of light punch shoryoken, also would launch hadukens at the opponent once knocked back
+                    Defensively blocked occasionaly, would sometimes counter oppoennt jump attack with its own or shoryuken. Would jump back to dodge
+                    
+Skpi New R, 0.0,Prioritizes jump punching with occasional hadoken at range. 
+No Skip New R, 0.02
+Skip LSTM, 0.0,Prioritizes jump punching with occasional hadoken at range. 
+No Skip LSTM, 0.03
+No Skip DQN, 0.01, Doesn't have as good defensive options, over chooses aggression
+Skip DQN, 0.1, similar results to

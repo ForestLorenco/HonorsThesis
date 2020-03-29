@@ -33,7 +33,7 @@ class SF_Dueling:
 
     def __init__(self, start_epsilon = 1.0, resume=0,render=False):
     #things for the learning
-        self.env = SFENV(multi=False,skip=True, render=render)
+        self.env = SFENV(multi=False,skip=False, render=render)
         obs = self.env.reset()
         x_t = cv2.resize(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY), (84, 84))
         self.s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
@@ -219,7 +219,17 @@ class SF_Dueling:
         signal.signal(signal.SIGINT, signal_handler)
         total_reward = 0
         terminal = False
-        while not terminal:
+        times = 0
+        wins = 0
+        while times < 100:
+            if terminal:
+                
+                times += 1
+                terminal = False
+                if info["matches_won"] == 2:
+                    wins += 1
+                obs = self.env.reset()
+                print("Games:", times, "Wins:", wins)
             if self.stop_requested:
                 exit(0)
 
