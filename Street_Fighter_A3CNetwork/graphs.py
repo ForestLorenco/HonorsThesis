@@ -47,7 +47,7 @@ def SvsNS():
         print(p[7:-1])
         plt.plot(points_s, linewidth=.5, label="Skip")
         plt.plot(points_ns, linewidth=.5, label="No Skip")
-        plt.title("Skip vs No Skip of "+p[7:-1])
+        plt.title("Skip vs No Skip of "+names[i])
         plt.ylabel('Reward')
         plt.xlabel('Games over Time (25 hrs)')
         plt.legend(loc="best")
@@ -73,10 +73,10 @@ def LSTMvsFF():
     plt.clf()
 
 def duelvsa3c():
-    data_d = pd.read_csv(DEULING+"NoSkip/data.csv")
+    data_d = pd.read_csv("NoSkipDueling/data.csv")
     points_d = data_d.values
 
-    data_a = pd.read_csv(NOSKIP+"OldRew/data.csv")
+    data_a = pd.read_csv(NOSKIP+"NetworkOldRew/data.csv")
     points_a = data_a.values
 
     plt.plot(points_d, linewidth=.5, label="Dueling")
@@ -88,10 +88,10 @@ def duelvsa3c():
     plt.savefig("Plots/D_vs_A3C_NoSkipGraph")
     plt.clf()
 
-    data_d = pd.read_csv(DEULING+"Skip/data.csv")
+    data_d = pd.read_csv("SkipDueling/data.csv")
     points_d = data_d.values[0:300]
 
-    data_a = pd.read_csv(SKIP+"OldRew/data.csv")
+    data_a = pd.read_csv(SKIP+"NetworkOldRew/data.csv")
     points_a = data_a.values
 
     plt.plot(points_d, linewidth=.5, label="Dueling")
@@ -106,6 +106,6 @@ def duelvsa3c():
 if __name__ == "__main__":
     SvsNS()
     #LSTMvsFF()
-    #duelvsa3c()
+    duelvsa3c()
 
 

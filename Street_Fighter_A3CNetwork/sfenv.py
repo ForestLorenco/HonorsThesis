@@ -6,7 +6,7 @@ from sf_constants import SKIP_FRAMES
 import random as rand
 
 class SFENV:
-    def __init__(self, render=False, multi=True, skip=True):
+    def __init__(self, render=False, multi=True, skip=True, r2 = 176):
         '''
         Wrapper class for street fighter II environment. This has implementations for simple
         movements for easy training as well as wait times for move animations. 
@@ -22,6 +22,7 @@ class SFENV:
         self.actions_names.extend(['HURRICANE_KICK', 'SHORYUKEN', 'HADOKEN'])
         self.dead = False
         self.skip = skip
+        self.r2 = r2
 
     def reset(self):
         '''
@@ -111,11 +112,11 @@ class SFENV:
 
                 if self.info["matches_won"] < info["matches_won"]:
                     
-                    self.reward += 176
+                    self.reward += self.r2
 
                 if self.info["enemy_matches_won"] < info["enemy_matches_won"]:
                     
-                    self.reward -= 176
+                    self.reward -= self.r2
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters
                 if self.info["matches_won"] == 2 or self.info["enemy_matches_won"] == 2:
@@ -148,11 +149,11 @@ class SFENV:
 
                 if self.info["matches_won"] < info["matches_won"]:
                     
-                    self.reward += 176
+                    self.reward += self.r2
                     
                 if self.info["enemy_matches_won"] < info["enemy_matches_won"]:
                     
-                    self.reward -= 176
+                    self.reward -= self.r2
                 self.info = info
                 #Temporary for now, might change this done condition to go to other characters
                 if self.info["matches_won"] == 2 or self.info["enemy_matches_won"] == 2:
