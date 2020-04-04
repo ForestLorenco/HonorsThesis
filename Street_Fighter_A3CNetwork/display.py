@@ -43,7 +43,7 @@ init = tf.global_variables_initializer()
 sess.run(init)
 
 saver = tf.train.Saver()
-c =  "NoSkipNetworkOldRew/"+CHECKPOINT_DIR#set checkpoint folder
+c =  "SkipNetworkLSTM/"+CHECKPOINT_DIR#set checkpoint folder
 checkpoint = tf.train.get_checkpoint_state(c)
 if checkpoint and checkpoint.model_checkpoint_path:
   saver.restore(sess, checkpoint.model_checkpoint_path)
@@ -75,7 +75,7 @@ while True:
     times += 1
     if info["matches_won"] == 2:
       wins += 1
-    if times == 670:
+    if times == 1000:
       env.close()
       break
     obs = env.reset()
@@ -89,8 +89,8 @@ while True:
     x_t1 = np.reshape(x_t1, (84, 84, 1))
     aux_s = np.delete(s_t, 0, axis=2)
     s_t = np.append(aux_s, x_t1, axis=2)
-print("Data Points")
-for i in range(len(data)):
-  print(data[i])
+#print("Data Points")
+#for i in range(len(data)):
+  #print(data[i])
 
-print("Win rate over 100 games is", wins/100)    
+print("Win rate over 100 games is", wins/1000)    
